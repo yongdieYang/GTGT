@@ -41,29 +41,20 @@ class GenFeatures:
         mol = Chem.MolFromSmiles(data.smiles)
         num_atoms = mol.GetNumAtoms()
         xs = []
-        # 对于每一个原子
         for atom in mol.GetAtoms():
-            # 元素类型
             symbol = [0.] * len(self.symbols)
             symbol[self.symbols.index(atom.GetSymbol())] = 1.
-            # 化合价
             degree = [0.] * 7
 
             degree[atom.GetDegree()] = 1.
-            # 形式电荷（Formal Charge）
             formal_charge = atom.GetFormalCharge()
-            # 自由基电子数（Radical Electrons）
             radical_electrons = atom.GetNumRadicalElectrons()
-            # 杂化类型
             hybridization = [0.] * len(self.hybridizations)
             hybridization[self.hybridizations.index(
                 atom.GetHybridization())] = 1.
-            # 芳香性
             aromaticity = 1. if atom.GetIsAromatic() else 0.
-            # 原子的总氢原子数
             hydrogens = [0.] * 5
             hydrogens[atom.GetTotalNumHs()] = 1.
-            # 手性
             chirality = 1. if atom.HasProp('_ChiralityPossible') else 0.
             chirality_type = [0.] * 2
             if atom.HasProp('_CIPCode'):
@@ -79,23 +70,17 @@ class GenFeatures:
         edge_indices = []
         edge_attrs = []
         for bond in mol.GetBonds():
-            # 化学键两端原子的索引
             edge_indices += [[bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()]]
             edge_indices += [[bond.GetEndAtomIdx(), bond.GetBeginAtomIdx()]]
-            # 键的类型
             bond_type = bond.GetBondType()
             single = 1. if bond_type == Chem.rdchem.BondType.SINGLE else 0.
             double = 1. if bond_type == Chem.rdchem.BondType.DOUBLE else 0.
             triple = 1. if bond_type == Chem.rdchem.BondType.TRIPLE else 0.
             aromatic = 1. if bond_type == Chem.rdchem.BondType.AROMATIC else 0.
-            # 键是否共轭
             conjugation = 1. if bond.GetIsConjugated() else 0.
-            # 键是否在环中
             ring = 1. if bond.IsInRing() else 0.
-
             stereo = [0.] * 4
             stereo[self.stereos.index(bond.GetStereo())] = 1.
-            # 立体化学属性
             edge_attr = torch.tensor(
                 [single, double, triple, aromatic, conjugation, ring] + stereo)
 
