@@ -11,7 +11,7 @@ import wandb
 from pre_transform import GenFeatures
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from CustomDataset_gene import ToxicDataset
-from CMOS_gene import GATGENETAXONOMY_Enhanced
+from CMOS import GATGENETAXONOMY
 import pandas as pd
 from tqdm import tqdm
 
@@ -145,7 +145,7 @@ def create_model(trial, in_channels, edge_dim, out_channels=1):
     hidden_channels = ((hidden_channels + 3) // 4) * 4
     
     # Use the new enhanced model, add taxonomy_dim parameter
-    model = GATGENETAXONOMY_Enhanced(
+    model = GATGENETAXONOMY(
         in_channels=in_channels,
         hidden_channels=hidden_channels,
         out_channels=out_channels,
@@ -182,7 +182,7 @@ def save_hyperparameters(trial, best_val_rmse, best_epoch, trial_number):
             'edge_dim': EDGE_DIM,
             'out_channels': 1,
             'taxonomy_dim': TAXONOMY_DIM,
-            'model_type': 'GATGENETAXONOMY_Enhanced'
+            'model_type': 'GATGENETAXONOMY'
         }
     }
     
@@ -196,7 +196,7 @@ def save_hyperparameters(trial, best_val_rmse, best_epoch, trial_number):
         f.write('=' * 80 + '\\n')
         f.write(f'Best Validation RMSE: {best_val_rmse:.6f}\\n')
         f.write(f'Best Epoch: {best_epoch}\\n')
-        f.write(f'Model Type: GATGENETAXONOMY_Enhanced\\n')
+        f.write(f'Model Type: GATGENETAXONOMY\\n')
         f.write('\\nHyperparameters:\\n')
         for param, value in trial.params.items():
             f.write(f'  {param}: {value}\\n')
