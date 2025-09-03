@@ -3,8 +3,11 @@
 ## 1. Project Overview
 
 This project aims to predict the toxicity or other biological effects of chemical substances on specific species by integrating molecular structure information, genetic information, and taxonomic data.
+
 The model leverages a Graph Neural Network (GNN) to extract molecular features from SMILES formulas. These features are then combined with genetic and taxonomic data through a sophisticated network architecture featuring a cross-attention mechanism for multi-modal feature fusion, ultimately enabling precise predictions.
+
 The project uses Optuna for hyperparameter optimization to find the best model configuration.
+
 Users can make predictions directly through the GTGT platform (https://platform-gtgt.streamlit.app).
 
 <img width="3259" height="2234" alt="GTGT-kaungjiatu-7" src="https://github.com/user-attachments/assets/0a2ec24c-84d7-4265-9689-5ac4ea71de42" />
