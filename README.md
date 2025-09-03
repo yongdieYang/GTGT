@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-We developed a multi-modal neural network, GTGT (Graph, Taxonomy, Gene, and Toxicity), to predict fish acute toxicity . The model integrates molecular graphs, species taxonomy, gene sequences, and exposure duration. Molecular features were extracted using a graph attention network (GAT), gene sequence features with one-dimensional convolutional neural networks (CNNs), and taxonomy features with multilayer perceptrons (MLPs). A cross-attention mechanism was applied to fuse the multi-modal representations, which were then concatenated with exposure duration and passed through fully connected layers to predict log10LC50 values.
+We developed a multi-modal neural network, GTGT (Graph, Taxonomy, Gene, and Toxicity), to predict fish acute toxicity . The model integrates molecular graphs, species taxonomy, gene sequences, and exposure duration. Molecular features were extracted using a graph attention network (GAT), gene sequence features with one-dimensional convolutional neural networks (CNNs), and taxonomy features with multilayer perceptrons (MLPs). A cross-attention mechanism was applied to fuse the multi-modal representations, which were then concatenated with exposure duration and passed through fully connected layers to predict log<sub>10</sub>LC<sub>50</sub> values.
 
 Users can make predictions directly through the GTGT platform (https://platform-gtgt.streamlit.app).
 
@@ -16,7 +16,7 @@ Users can make predictions directly through the GTGT platform (https://platform-
 
 -   **`CustomDataset.py`**:
     -   **Function**: Defines the custom dataset format for the project.
-    -   **Process**: The `CustomDataset` class in this file inherits from PyTorch Geometric's `InMemoryDataset`. It is responsible for loading data from CSV files, including SMILES strings, genetic sequences, taxonomic data, and target values (e.g., LC50). During data loading, it calls the `GenFeatures` class from `pre_transform.py` to process SMILES and generate molecular graphs.
+    -   **Process**: The `CustomDataset` class in this file inherits from PyTorch Geometric's `InMemoryDataset`. It is responsible for loading data from CSV files, including SMILES strings, genetic sequences, taxonomic data, and target values (e.g., LC<sub>50</sub>). During data loading, it calls the `GenFeatures` class from `pre_transform.py` to process SMILES and generate molecular graphs.
 
 -   **`CMOS.py`**:
     -   **Function**: Defines the core architecture of the entire prediction model.
