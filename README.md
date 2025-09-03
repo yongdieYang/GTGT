@@ -2,11 +2,7 @@
 
 ## 1. Project Overview
 
-This project aims to predict the toxicity or other biological effects of chemical substances on specific species by integrating molecular structure information, genetic information, and taxonomic data.
-
-The model leverages a Graph Neural Network (GNN) to extract molecular features from SMILES formulas. These features are then combined with genetic and taxonomic data through a sophisticated network architecture featuring a cross-attention mechanism for multi-modal feature fusion, ultimately enabling precise predictions.
-
-The project uses Optuna for hyperparameter optimization to find the best model configuration.
+We developed a multi-modal neural network, GTGT (Graph, Taxonomy, Gene, and Toxicity), to predict fish acute toxicity . The model integrates molecular graphs, species taxonomy, gene sequences, and exposure duration. Molecular features were extracted using a graph attention network (GAT), gene sequence features with one-dimensional convolutional neural networks (CNNs), and taxonomy features with multilayer perceptrons (MLPs). A cross-attention mechanism was applied to fuse the multi-modal representations, which were then concatenated with exposure duration and passed through fully connected layers to predict log10LC50 values.
 
 Users can make predictions directly through the GTGT platform (https://platform-gtgt.streamlit.app).
 
