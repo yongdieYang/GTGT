@@ -1,14 +1,12 @@
-import os  
+import os
 from typing import Optional, Callable
 import torch
 from torch_geometric.data import InMemoryDataset
-from torch_geometric.utils import from_smiles
 
 
 class ToxicDataset(InMemoryDataset):
-    """Data set class for handling toxic data, supporting feature processing in multiple modes"""
+    """Dataset class for handling toxicity data, supporting multiple feature processing modes."""
 
-    # gene mapping
     GENE_MAP = {'A': [1, 0, 0, 0], 'C': [0, 1, 0, 0], 'G': [0, 0, 1, 0], 'T': [0, 0, 0, 1]}
     DURATION_MAP = [24, 48, 72, 96]  # Adjust these values based on your actual data.
 
@@ -22,15 +20,15 @@ class ToxicDataset(InMemoryDataset):
             pre_filter: Optional[Callable] = None,
     ):
         """
-        Initialize toxicity dataset
+        Initializes the toxicity dataset.
 
         Args:
-            root: Data root directory
-            filenames: Original filenames
-            mode: Processing mode, optional ‘gene’, ‘taxonomy’, ‘gene+taxonomy’, ‘noclass’
-            transform: Data transformation function
-            pre_transform: Data pre-transformation function
-            pre_filter: Data pre-filtering function
+            root: Root directory for the data.
+            filenames: Raw data filenames.
+            mode: Processing mode, can be 'gene', 'taxonomy', 'gene+taxonomy', or 'noclass'.
+            transform: Data transformation function.
+            pre_transform: Data pre-transformation function.
+            pre_filter: Data pre-filtering function.
         """
         self.filenames = filenames
         self.mode = mode
@@ -39,7 +37,7 @@ class ToxicDataset(InMemoryDataset):
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     def validate_mode(self):
-        """Verify the validity of the mode parameters."""
+        """Validates the mode parameter."""
         valid_modes = ['gene', 'taxonomy', 'gene+taxonomy', 'noclass']
         if self.mode not in valid_modes:
             raise ValueError(f"Invalid mode '{self.mode}'. Mode must be one of: {valid_modes}")
@@ -54,12 +52,12 @@ class ToxicDataset(InMemoryDataset):
 
     @property
     def raw_file_names(self) -> str:
-        """The file name of the original file. If it exists, download will not be triggered"""
+        """The name of the raw files. If found, download is skipped."""
         return self.filenames
 
     @property
     def processed_file_names(self) -> str:
-        """If the processed file name is found in processed_dir, skip the process."""
+        """The name of the processed files. If found in processed_dir, processing is skipped."""
         return 'data.pt'
 
     def process(self):
@@ -80,27 +78,26 @@ class ToxicDataset(InMemoryDataset):
                 smiles = row.iloc[3]
                 mg_perl = float(row.iloc[4])
                 gene_data = row.iloc[5]
-
+                
                 available_cols = len(row)
                 if available_cols < 756:
                     print(f"Warning: Expected 756 columns but found {available_cols}")
-
                     taxonomy_data = row.iloc[6:].values.astype(float)
                 else:
-
                     taxonomy_data = row.iloc[6:756].values.astype(float)
                 
                 data = from_smiles(smiles)
                 if data is None:
                     print(f"Warning: Could not generate graph from SMILES for row {idx}")
                     continue
-
+                
                 data.organism = organism
                 data.chemical_name = chemical_name
+                data.smiles = smiles
                 
                 duration_tensor = torch.zeros(len(self.DURATION_MAP))
                 if duration in self.DURATION_MAP:
-                    duration_tensor[self.DURATION_MAP.index(duration)] = 1.0 
+                    duration_tensor[self.DURATION_MAP.index(duration)] = 1.0
                 data.duration = duration_tensor
                 
                 data.y = torch.tensor([mg_perl], dtype=torch.float)
@@ -130,5 +127,6 @@ class ToxicDataset(InMemoryDataset):
         torch.save(self.collate(data_list), self.processed_paths[0])
 
     def _process_gene_data(self, gene_data: str) -> torch.Tensor:
+        """Processes gene data and converts it to a tensor."""
         encoded_gene_data = [self.GENE_MAP[char] for char in gene_data]
         return torch.tensor(encoded_gene_data, dtype=torch.float).transpose(0, 1).unsqueeze(0)
