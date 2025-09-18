@@ -55,12 +55,11 @@ Users can make predictions directly through the GTGT platform (https://platform-
 
 Ensure all required Python libraries are installed, primarily:
 
--   `torch`
--   `torch_geometric`
--   `rdkit-pypi`
--   `optuna`
--   `pandas`
--   `wandb`
+-   `torch==2.2.2`
+-   `torch_geometric==2.6.1`
+-   `rdkit`
+-   `optuna==4.3.0`
+-   `wandb==0.18.7`
 
 You can install them via `pip`:
 ```bash
