@@ -1,7 +1,6 @@
 import torch
 import random
 import numpy as np
-import json
 import os
 import copy
 from torch_geometric.loader import DataLoader 
@@ -24,24 +23,19 @@ NUM_FOLDS = 10
 MAX_EPOCHS = X
 PATIENCE = X
 BEST_MODEL_PATH = 'XXXX.pth'
-LOG_FILE = '.txt'
 PROJECT_NAME = 'XXXX'
 N_TRIALS_OPTUNA = X
 FINAL_PATIENCE = X
 IN_CHANNELS = X 
 EDGE_DIM = X
 TAXONOMY_DIM = X
-DATA_FILENAME = 'yyd_data_train.csv'
+DATA_FILENAME = 'data.csv'
 DATA_MODE = "gene+taxonomy"
 
 
 # Create directories for saving models and hyperparameters
 MODELS_DIR = f'saved_models_{PROJECT_NAME}'
-HYPERPARAMS_DIR = f'hyperparameters_{PROJECT_NAME}'
-TEST_DATASET_DIR = f'test_dataset_{PROJECT_NAME}'
 os.makedirs(MODELS_DIR, exist_ok=True)
-os.makedirs(HYPERPARAMS_DIR, exist_ok=True)
-os.makedirs(TEST_DATASET_DIR, exist_ok=True)
 
 # Set random seed
 def set_seed(seed):
@@ -265,7 +259,7 @@ def objective(trial):
     
     # Export datasets from the Optuna phase
     if trial.number == 0:  # Export only during the first trial to avoid repetition
-        print("\\n=== Exporting Optuna Phase Datasets ===")
+        print("\n=== Exporting Optuna Phase Datasets ===")
         export_datasets_to_csv(train_dataset, val_dataset, test_dataset, prefix="optuna_", output_dir=f"optuna_dataset_{PROJECT_NAME}")
         print("Optuna phase datasets exported successfully!")
     
@@ -345,50 +339,6 @@ def objective(trial):
     wandb.finish()
     return best_val_rmse
 
-def load_model_with_hyperparams(trial_number, device='cpu'):
-    """Load model and hyperparameters by trial number"""
-    model_path = os.path.join(MODELS_DIR, f'model_{trial_number}.pth')
-    hyperparams_file = os.path.join(HYPERPARAMS_DIR, f'hyperparameters_{trial_number}.json')
-    
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model file not found: {model_path}")
-    
-    model = torch.load(model_path, map_location=device)
-    
-    hyperparams = None
-    if os.path.exists(hyperparams_file):
-        with open(hyperparams_file, 'r', encoding='utf-8') as f:
-            hyperparams = json.load(f)
-    
-    return model, hyperparams
-
-def list_saved_models():
-    """List all saved models"""
-    if not os.path.exists(MODELS_DIR):
-        print(f"Model directory not found: {MODELS_DIR}")
-        return []
-    
-    model_files = [f for f in os.listdir(MODELS_DIR) if f.endswith('.pth')]
-    model_files.sort(key=lambda x: int(x.split('_')[1].split('.')[0]) if '_' in x else 0)
-    
-    print(f"\\nFound {len(model_files)} models in {MODELS_DIR}:")
-    
-    trial_numbers = []
-    for model_file in model_files:
-        if 'model_' in model_file:
-            trial_num = model_file.split('model_')[1].split('.')[0]
-            trial_numbers.append(int(trial_num))
-            
-            # Try to read corresponding hyperparameters
-            hyperparams_file = os.path.join(HYPERPARAMS_DIR, f'hyperparameters_{trial_num}.json')
-            if os.path.exists(hyperparams_file):
-                with open(hyperparams_file, 'r', encoding='utf-8') as f:
-                    hyperparams = json.load(f)
-                print(f"  Trial {trial_num}: RMSE={hyperparams['best_val_rmse']:.6f}")
-            else:
-                print(f"  Trial {trial_num}: Hyperparameter file missing")
-    
-    return trial_numbers
 
 # Main function
 def main():
