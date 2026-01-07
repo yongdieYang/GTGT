@@ -169,45 +169,6 @@ def create_optimizer(trial, model):
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     return optimizer
 
-# Function to save hyperparameters
-def save_hyperparameters(trial, best_val_rmse, best_epoch, trial_number):
-    """Save hyperparameters to a file"""
-    hyperparams = {
-        'trial_number': trial_number,
-        'best_val_rmse': best_val_rmse,
-        'best_epoch': best_epoch,
-        'hyperparameters': trial.params,
-        'model_architecture': {
-            'in_channels': IN_CHANNELS,
-            'edge_dim': EDGE_DIM,
-            'out_channels': 1,
-            'taxonomy_dim': TAXONOMY_DIM,
-            'model_type': 'GATGENETAXONOMY'
-        }
-    }
-    
-    hyperparams_file = os.path.join(HYPERPARAMS_DIR, f'hyperparameters_{trial_number}.json')
-    with open(hyperparams_file, 'w', encoding='utf-8') as f:
-        json.dump(hyperparams, f, indent=4, ensure_ascii=False)
-    
-    hyperparams_txt_file = os.path.join(HYPERPARAMS_DIR, f'hyperparameters_{trial_number}.txt')
-    with open(hyperparams_txt_file, 'w', encoding='utf-8') as f:
-        f.write(f'Trial {trial_number} Hyperparameters (Enhanced Gene Model)\\n')
-        f.write('=' * 80 + '\\n')
-        f.write(f'Best Validation RMSE: {best_val_rmse:.6f}\\n')
-        f.write(f'Best Epoch: {best_epoch}\\n')
-        f.write(f'Model Type: GATGENETAXONOMY\\n')
-        f.write('\\nHyperparameters:\\n')
-        for param, value in trial.params.items():
-            f.write(f'  {param}: {value}\\n')
-        f.write('\\nModel Architecture:\\n')
-        f.write(f'  in_channels: {IN_CHANNELS}\\n')
-        f.write(f'  edge_dim: {EDGE_DIM}\\n')
-        f.write(f'  out_channels: 1\\n')
-        f.write(f'  taxonomy_dim: {TAXONOMY_DIM}\\n')
-    
-    return hyperparams_file, hyperparams_txt_file
-
 # ----------------------
 # Training and Evaluation Functions
 # ----------------------
