@@ -338,8 +338,6 @@ def objective(trial):
         model_save_path = os.path.join(MODELS_DIR, f'model_{trial.number}.pth')
         torch.save(model, model_save_path)
         
-        save_hyperparameters(trial, best_val_rmse, best_epoch, trial.number)
-        
         print(f"\\nTrial {trial.number} completed:")
         print(f"  Best validation RMSE: {best_val_rmse:.6f} (at epoch {best_epoch})")
         print(f"  Model saved to: {model_save_path}")
